@@ -10,7 +10,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.ParcelUuid;
 import android.widget.Toast;
+import java.util.*;
 
 import java.util.Set;
 
@@ -18,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     BluetoothAdapter btadapter;
     int REQUEST_ENABLE_BT = 0;
     Set<BluetoothDevice> paired;
+    //Set<UUID> muuid;
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -52,6 +55,12 @@ public class MainActivity extends AppCompatActivity {
         Intent discoverable = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         discoverable.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION,300);
         startActivity(discoverable);
+        for(BluetoothDevice bd: paired){
+            ParcelUuid[] muuid = bd.getUuids();
+            connectThread cnt = new connectThread(bd,muuid[0].getUuid());
+            cnt.run(btadapter);
+            cnt.cancel();
+        }
     }
     @Override
     protected void onDestroy(){
